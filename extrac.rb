@@ -41,6 +41,6 @@ File.write(dest, result)
 
 system("gcc -w #{dest} -o #{outc}")
 # p outc
-system("./#{outc}.exe")
-File.delete "#{outc}.exe"
-File.delete "#{outc}.c"
+system("./#{outc}")
+# File.delete "#{outc}"
+# File.delete "#{outc}.c"
