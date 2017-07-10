@@ -2,10 +2,17 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h>
+#include <time.h>
 typedef int64_t large;
 #define INT "%i"
+#define INTREP "%*i"
+#define INTLREP "%-*i"
 #define LARGE "%"PRId64
+#define LARGEREP "%*"PRId64
+#define LARGELREP "%-*"PRId64
 #define CHAR "%c"
+#define CHARREP "%*c"
+#define CHARLREP "%-*c"
 #define until(e)while(!(e))
 #define equals ==
 #define is =
@@ -35,7 +42,9 @@ typedef int64_t large;
 #define print(x) printf("%d%c", x, EOS)
 #define show(x) printf("%c%c", x, EOS)
 #define disp(x) printf("%g%c", x, EOS)
-#define echo(x) printf("%s", x)
+#define echo(x) string_display(x)
+#define out(x) printf("%s", x)
+#define puteos putchar(EOS)
 #define trace(x) printf(LARGE"%c", x, EOS)
 #define error(x) fprintf(stderr, "Error: %s\n", x)
 #define quote(x) #x
@@ -46,6 +55,8 @@ typedef int64_t large;
 #define true (0 == 0)
 #define bool int
 #define forever while(true)
+#define prepend(str, c) string_prepend_char(str, c)
+#define append(str, c) string_append_char(str, c)
 // string stuff
 typedef struct string {
     size_t capacity;
@@ -112,7 +123,8 @@ string* read_line(FILE* f){
     
     return s;
 }
-#define new(type, name) type name = make_new(#type)
+#define new(type, name) type* name = make_new(#type)
+
 size_t str_len(const char* a){ size_t i = 0; while(a[i]) i++; return i; }
 int str_eql(const char* a, const char* b){
     if(str_len(a) != str_len(b)) return false;
@@ -123,7 +135,9 @@ int str_eql(const char* a, const char* b){
 }
 void* make_new(const char* type){
     if(str_eql(type, "string")){
-        
+        string* res = malloc(sizeof(string));
+        string_init(res, "", 0);
+        return res;
     } else {
         fprintf(stderr, "Unknown object target `%s`\n", type);
     }
@@ -161,6 +175,7 @@ event_t on_end;
 void onend(event_t t){
     on_end = t;
 }
+int random(x, y){ return rand() % (y - x) + x; }
 void no_op(void){}
 int main(){
 size_t* fe_cs = calloc(256, sizeof(size_t));
@@ -168,6 +183,7 @@ size_t fe_c = 0;
 #define foreach(name, s) for(name = s->data[fe_cs[++fe_c] = 0]; fe_cs[fe_c] < s->size; name = s->data[++fe_cs[fe_c]])
 #define endeach } --fe_c;
 #define dotimes(n) for(fe_cs[++fe_c] = n; fe_cs[fe_c] > 0; --fe_cs[fe_c]) {
+srand(time(NULL));
 MEM* mem = malloc(sizeof(MEM));
 mem->size = 1000;
 mem->data = calloc(mem->size, sizeof(int));
