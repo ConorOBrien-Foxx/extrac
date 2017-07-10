@@ -1,20 +1,34 @@
 $header = File.read("header.h") + "\n"
+$main_start = File.read("startmain.h") + "\n"
 $footer = File.read("footer.h") + "\n"
+
+$opts = {
+    :has_math => false
+}
 
 $allowed_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz \n\t()0123456789,\\".chars
 def transpile(prog)
+    prog = prog.gsub(/λ/, "lambda ")
     invalid = prog.chars - $allowed_chars
     if invalid.size != 0
         $stderr.puts "Invalid character: #{invalid[0]}"
         exit -1
     end
-    result = ""
-    preheader = ""
+    result = preheader = premain = ""
     prog.lines.each { |line|
         line.chomp!
         if line.lstrip.start_with? "import "
             line.slice! 0, 7 + line.index("import ")
-            preheader = "#include <#{line}.h>\n" + preheader
+            sections = line.split ","
+            sections.each { |s|
+                $opts[:has_math] = true if s == "math"
+                preheader = "#include <#{s}.h>\n" + preheader
+            }
+            next
+        elsif line.lstrip.start_with? "lambda "
+            line.slice! 0, 7 + line.index("lambda ")
+            name, *args, body = line.split(/,\s*/)
+            premain += "#{name}(#{args * ","}){ return #{body}; }\n"
             next
         end
         if line.rstrip.end_with? "\\"
@@ -24,7 +38,7 @@ def transpile(prog)
             result += ";\n"
         end
     }
-    preheader + $header + result + $footer
+    preheader + $header + premain + $main_start + result + $footer
 end
 
 def rm_extension(f)
@@ -39,7 +53,10 @@ result = transpile file
 
 File.write(dest, result)
 
-system("gcc -w #{dest} -o #{outc}")
+flags = []
+flags.push "-lm" if $opts[:has_math]
+
+system("gcc #{flags.join " "} #{dest} -o #{outc}")
 # p outc
 system("./#{outc}")
 # File.delete "#{outc}"
