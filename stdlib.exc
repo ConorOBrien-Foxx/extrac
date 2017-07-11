@@ -1,0 +1,15 @@
+function(
+    range, returns an array pointer,   \
+    takes a number named min,          \
+    takes another number named max     \
+) does
+    arraylen is max minus min plus 1
+    new(array, result)
+    let the counter be 0
+    let the upperbound be arraylen
+    until(the counter equals the length(of the result)) do
+        setpos(result, counter, min plus counter)
+        increment counter
+    end
+    return the result
+end

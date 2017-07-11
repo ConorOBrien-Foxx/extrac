@@ -9,6 +9,7 @@ end
 $header     = read_append("header.h")
 $main_start = read_append("startmain.h")
 $footer     = read_append("footer.h")
+$stdlib     = read_append("stdlib.exc")
 
 $opts = {
     :has_math => false
@@ -16,12 +17,14 @@ $opts = {
 
 $allowed_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz \n\t()0123456789,\\".chars
 def transpile(prog)
-    prog = prog.gsub(/λ/, "lambda ")
+    prog = $stdlib + prog
+    prog = prog.gsub(/λ/, "lambda ").gsub(/\/\//, "\\\\\\\\").gsub(/-/, "")
     invalid = prog.chars - $allowed_chars
     if invalid.size != 0
         $stderr.puts "Invalid character: #{invalid[0]}"
         exit -1
     end
+    prog = prog.gsub(/\\\\/, "//")
     result = preheader = premain = ""
     prog.lines.each { |line|
         line.chomp!
@@ -39,8 +42,11 @@ def transpile(prog)
             premain += "#{name}(#{args * ","}){ return #{body}; }\n"
             next
         end
-        if line.rstrip.end_with? "\\"
-            result += line.rstrip[0..-2]
+        r = line.rstrip
+        if r.end_with?("\\") || r.end_with?("WITH") || r.end_with?("BUT")
+            result += r[0..-2]
+        elsif r.end_with?("(")# || r.end_with?(")")
+            result += r
         else
             result += line
             result += ";\n"

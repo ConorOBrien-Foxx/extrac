@@ -1,14 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 #include <unistd.h>
 #include <inttypes.h>
 #include <time.h>
 #include <stdarg.h>
 typedef int64_t large;
+#define function(name, desc, ...) desc name(__VA_ARGS__)
+#define nilad(name, desc) function(name, desc, void)
+// access
 #define fst(n) (n)[0]
 #define snd(n) (n)[1]
 #define nth(n,k) (n)[k]
+// type specifiers
 #define INT "%i"
 #define INTREP "%*i"
 #define INTLREP "%-*i"
@@ -18,16 +23,26 @@ typedef int64_t large;
 #define CHAR "%c"
 #define CHARREP "%*c"
 #define CHARLREP "%-*c"
+// more sugar
 #define until(e)while(!(e))
 #define equals ==
 #define is =
+#define pointer *
 #define be =
 #define to =
+#define less <
+#define greater >
+#define sorta(x) x##=
+// types
 #define let int
 #define dbl double
 #define var char
 #define set large
 #define arr array*
+#define number int
+#define integer large
+// more sugar
+#define very(x) x x
 #define decrement --
 #define increment ++
 #define added +
@@ -42,11 +57,12 @@ typedef int64_t large;
 #define divided /
 #define modulus %
 #define not !
-#define by /**/
 #define do {
+#define does do
 #define end }
 #define and &
 #define or |
+#define AND ;
 #define xor ^
 #define F (double)
 #define print(x) printf("%d%c", x, EOS)
@@ -70,6 +86,8 @@ typedef int64_t large;
 #define forever while(true)
 #define prepend(str, c) string_prepend_char(str, c)
 #define append(str, c) string_append_char(str, c)
+#define setpos(a, b, c) ((a)->data[b] = c)
+#define getpos(a, b) ((a)->data[b])
 typedef struct array {
     size_t size;
     double* data;
@@ -162,8 +180,8 @@ string* read_line(FILE* f){
     return s;
 }
 #define new(type, name) type* name = make_new(#type)
-
 size_t str_len(const char* a){ size_t i = 0; while(a[i]) i++; return i; }
+size_t arraylen = 2;
 int str_eql(const char* a, const char* b){
     if(str_len(a) != str_len(b)) return false;
     for(size_t i = 0; i < str_len(a); i++){
@@ -175,6 +193,9 @@ void* make_new(const char* type){
     if(str_eql(type, "string")){
         string* res = malloc(sizeof(string));
         string_init(res, "", 0);
+        return res;
+    } else if(str_eql(type, "array")){
+        array* res = array_of(arraylen);
         return res;
     } else {
         fprintf(stderr, "Unknown object target `%s`\n", type);
@@ -268,3 +289,17 @@ void onend(event_t t){
 int get_random(int x, int y){ return rand() % (y - x) + x; }
 #define random get_random
 void no_op(void){}
+// sugar
+#define by      /**/
+#define than    /**/
+#define returns /**/
+#define Returns /**/
+#define takes   /**/
+#define an      /**/
+#define the     /**/
+#define a       /**/
+#define of      /**/
+#define named   /**/
+#define another /**/
+#define WITH    /*used for joining statements*/
+#define BUT     /*used for joining statements*/
