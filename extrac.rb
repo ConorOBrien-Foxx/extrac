@@ -1,9 +1,14 @@
 def get_relative(name)
     File.join(File.dirname(__FILE__), name)
 end
-$header = File.read(get_relative "header.h") + "\n"
-$main_start = File.read(get_relative "startmain.h") + "\n"
-$footer = File.read(get_relative "footer.h") + "\n"
+
+def read_append(name)
+    File.read(get_relative name) + "\n"
+end
+
+$header     = read_append("header.h")
+$main_start = read_append("startmain.h")
+$footer     = read_append("footer.h")
 
 $opts = {
     :has_math => false
