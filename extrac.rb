@@ -1,6 +1,9 @@
-$header = File.read("header.h") + "\n"
-$main_start = File.read("startmain.h") + "\n"
-$footer = File.read("footer.h") + "\n"
+def get_relative(name)
+    File.join(File.dirname(__FILE__), name)
+end
+$header = File.read(get_relative "header.h") + "\n"
+$main_start = File.read(get_relative "startmain.h") + "\n"
+$footer = File.read(get_relative "footer.h") + "\n"
 
 $opts = {
     :has_math => false
