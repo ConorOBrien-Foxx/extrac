@@ -265,5 +265,6 @@ event_t on_end;
 void onend(event_t t){
     on_end = t;
 }
-int random(int x, int y){ return rand() % (y - x) + x; }
+int get_random(int x, int y){ return rand() % (y - x) + x; }
+#define random get_random
 void no_op(void){}
