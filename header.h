@@ -37,6 +37,7 @@ typedef int64_t large;
 #define let int
 #define dbl double
 #define var char
+#define def string*
 #define set large
 #define arr array*
 #define number int
