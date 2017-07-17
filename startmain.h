@@ -1,4 +1,4 @@
-int main(){
+int main(int argc, char** argv){
 size_t* fe_cs = calloc(256, sizeof(size_t));
 size_t fe_c = 0;
 #define foreach(name, s) for(name = s->data[fe_cs[++fe_c] = 0]; fe_cs[fe_c] < s->size; name = s->data[++fe_cs[fe_c]])
